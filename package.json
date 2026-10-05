@@ -1,0 +1,36 @@
+{
+  "name": "cat-desktop-pet",
+  "version": "0.1.0",
+  "description": "桌面猫咪：周日程 + 番茄钟",
+  "author": "你的名字",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.example.catpet",
+    "productName": "桌面猫咪",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "桌面猫咪"
+    }
+  }
+}

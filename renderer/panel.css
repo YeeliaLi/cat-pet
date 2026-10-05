@@ -1,0 +1,226 @@
+:root {
+  --bg: #fffaf3;
+  --card: #ffffff;
+  --line: #eadfce;
+  --text: #3a2e22;
+  --muted: #9a8b7a;
+  --accent: #f08a3c;
+  --accent-soft: #fde8d2;
+  --focus: #e0584f;
+  --rest: #3f9b72;
+  --hour: 48px; /* 要和 panel.js 里的 HOUR_PX 一致 */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: "Microsoft YaHei UI", "PingFang SC", system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+button:hover { background: var(--accent-soft); }
+button:disabled { opacity: 0.4; cursor: default; background: #fff; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.primary:hover { filter: brightness(1.06); background: var(--accent); }
+button.danger { color: var(--focus); }
+button.icon { border: none; background: transparent; font-size: 16px; padding: 4px 10px; }
+
+input[type="text"], input[type="date"], input[type="time"], input[type="number"] {
+  font: inherit;
+  color: inherit;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* ---------- 标题栏（可拖动窗口） ---------- */
+#titlebar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 48px;
+  padding: 0 8px 0 16px;
+  background: #fff1df;
+  border-bottom: 1px solid var(--line);
+  -webkit-app-region: drag;
+}
+#titlebar .title { font-weight: 700; font-size: 15px; }
+#titlebar .week-nav { flex: 1; display: flex; align-items: center; gap: 6px; }
+#titlebar button { -webkit-app-region: no-drag; }
+#range { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+main { flex: 1; display: flex; min-height: 0; }
+
+/* ---------- 左侧栏 ---------- */
+#side {
+  width: 250px;
+  padding: 14px;
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+}
+.card h3 { margin: 0 0 8px; font-size: 14px; }
+
+.pomo { text-align: center; }
+#pomoMode { font-weight: 700; color: var(--muted); }
+#pomoMode.focus { color: var(--focus); }
+#pomoMode.break { color: var(--rest); }
+#pomoTime {
+  font-size: 46px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin: 4px 0 10px;
+}
+.pomo-btns { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.pomo-settings { margin-top: 12px; color: var(--muted); font-size: 13px; }
+.pomo-settings input { width: 54px; text-align: center; }
+#todayCount { margin-top: 10px; font-size: 13px; }
+
+#todayList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+#todayList li { display: flex; gap: 8px; align-items: baseline; font-size: 13px; }
+#todayList li.empty { color: var(--muted); }
+#todayList li.done .t { text-decoration: line-through; color: var(--muted); }
+#todayList .time { color: var(--muted); font-variant-numeric: tabular-nums; }
+#todayList label { display: flex; gap: 8px; align-items: baseline; cursor: pointer; }
+
+/* ---------- 日历：时间格 ---------- */
+#calendar { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+#scroll { flex: 1; overflow-y: auto; position: relative; }
+
+#dayHeads, #grid {
+  display: grid;
+  grid-template-columns: 56px repeat(7, minmax(0, 1fr));
+}
+
+#dayHeads {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.head { text-align: center; padding: 6px 0; border-left: 1px solid var(--line); }
+.head span { display: block; color: var(--muted); font-size: 12px; }
+.head b {
+  display: inline-block;
+  min-width: 26px;
+  height: 26px;
+  line-height: 26px;
+  border-radius: 13px;
+  font-size: 15px;
+}
+.head.today b { background: var(--accent); color: #fff; }
+
+#grid { position: relative; margin-top: 8px; }
+
+.time-label {
+  height: var(--hour);
+  padding-right: 8px;
+  text-align: right;
+  font-size: 11px;
+  color: var(--muted);
+  transform: translateY(-7px);
+  font-variant-numeric: tabular-nums;
+}
+
+.day-col {
+  position: relative;
+  border-left: 1px solid var(--line);
+  /* 每小时一条横线（线在每个小时格的顶部） */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--line) 0, var(--line) 1px,
+    transparent 1px, transparent var(--hour)
+  );
+  cursor: cell;
+}
+.day-col.today { background-color: #fff5e8; }
+
+.event {
+  position: absolute;
+  z-index: 1;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border-left: 3px solid var(--accent);
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.event .et { display: block; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.event .en { display: block; font-weight: 600; }
+.event.done { opacity: 0.5; }
+.event.done .en { text-decoration: line-through; }
+.event:hover { filter: brightness(0.97); }
+
+.now-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--focus);
+  z-index: 3;
+  pointer-events: none;
+}
+.now-line::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--focus);
+}
+
+/* ---------- 新建 / 编辑弹窗 ---------- */
+dialog {
+  width: 340px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text);
+  background: #fff;
+}
+dialog::backdrop { background: rgba(0, 0, 0, 0.25); }
+dialog h3 { margin: 0 0 12px; }
+dialog label { display: block; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
+dialog label input[type="text"],
+dialog label input[type="date"],
+dialog label input[type="time"] { display: block; width: 100%; margin-top: 4px; color: var(--text); }
+dialog .row { display: flex; gap: 10px; }
+dialog .row label { flex: 1; }
+dialog label.check { color: var(--text); display: flex; gap: 6px; align-items: center; }
+#dlgError { min-height: 18px; color: var(--focus); font-size: 12px; margin-bottom: 6px; }
+.dlg-btns { display: flex; gap: 8px; align-items: center; }
+.dlg-btns .spacer { flex: 1; }
